@@ -3,17 +3,21 @@ package com.example.myapplication
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.Button
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -27,11 +31,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -39,6 +44,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.compose.lazyCol.SimpleLazyList
+import com.example.myapplication.compose.permission.nativePermission
+import com.example.myapplication.compose.permission.onPermissionResult
 import com.example.myapplication.compose.simpleNavi.Favorite
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -91,19 +98,49 @@ fun testCon() {
     MainView()
 }
 
+@Composable
+fun AlertDialog(shouldShowDialog: Boolean, onAction: (Boolean) -> Unit) {
+
+    AlertDialog(onDismissRequest = {
+        onAction(false)
+    },
+        title = { Text(text = "Alert Dialog") },
+        text = { Text(text = "Jetpack Compose Alert Dialog") },
+        confirmButton = { // 6
+            Button(
+                onClick = {
+                    onAction(false)
+                }
+            ) {
+                Text(
+                    text = "Confirm",
+                    color = Color.White
+                )
+            }
+        })
+}
+
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun PermissionRequest() {
-    val accessFine = rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION) { isGranted ->
-        Log.i("DEBUG", "rememberPermissionState invoke ${isGranted}")
 
-        if (isGranted) {
-            // Permission granted
-        } else {
-            // Handle permission denial
+    val activity = LocalContext.current as MainActivity
+
+    val accessFine =
+        rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION) { isGranted ->
+            Log.i("DEBUG", "rememberPermissionState invoke ${isGranted}")
+
+            if (isGranted) {
+                // Permission granted
+
+
+            } else {
+                // Show rationale if needed
+
+            }
         }
 
-    }
+
 
     LaunchedEffect(accessFine) {
         if (!accessFine.status.isGranted && accessFine.status.shouldShowRationale) {
@@ -118,11 +155,21 @@ fun PermissionRequest() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainView() {
 
-    PermissionRequest()
+    nativePermission(android.Manifest.permission.ACCESS_FINE_LOCATION, object : onPermissionResult{
+        override fun onSuccess(isGranted: Boolean) {
+        }
+
+        override fun onReject(isGranted: Boolean) {
+        }
+
+        override fun onNoAgain(isGranted: Boolean) {
+        }
+    })
 
     val topLevelRoutes = listOf(
         BottomNavItem.Favorite, BottomNavItem.PlayArrow
