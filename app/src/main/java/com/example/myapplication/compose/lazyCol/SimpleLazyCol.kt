@@ -13,28 +13,24 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle.Companion.Italic
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.myapplication.R
 
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun SimpleLazyList(count : Int, modifier: Modifier) {
+fun SimpleLazyList(count: Int, modifier: Modifier, onClick: () -> Unit) {
 
     val lists = ArrayList<Int>()
     for (i in 0..count) {
@@ -42,7 +38,9 @@ fun SimpleLazyList(count : Int, modifier: Modifier) {
     }
 
     LazyColumn(
-        modifier = modifier.fillMaxWidth().fillMaxHeight()
+        modifier = modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
             .background(MaterialTheme.colorScheme.background)
 //            .pointerInput(key1 = ){
 //                detectDragGesturesAfterLongPress(
@@ -54,7 +52,7 @@ fun SimpleLazyList(count : Int, modifier: Modifier) {
     ) {
 
         stickyHeader {
-            Header("TTTT")
+            Header("TTTT") { onClick() }
         }
 
 //        item {
@@ -65,7 +63,7 @@ fun SimpleLazyList(count : Int, modifier: Modifier) {
         }
 
         stickyHeader {
-            Header("IIII")
+            Header("IIII") {}
         }
 
 
@@ -75,7 +73,7 @@ fun SimpleLazyList(count : Int, modifier: Modifier) {
 
 
         stickyHeader {
-            Header("BBBB")
+            Header("BBBB") {}
         }
 
         items(lists) { i ->
@@ -105,8 +103,9 @@ fun ItemLikeGoogleDrive(id: Int, modifi: Modifier = Modifier) {
             contentScale = ContentScale.Crop
         )
 
-        Column(modifier = modifi
-            .fillMaxWidth(),
+        Column(
+            modifier = modifi
+                .fillMaxWidth(),
         ) {
 
             Text(
@@ -127,16 +126,18 @@ fun ItemLikeGoogleDrive(id: Int, modifi: Modifier = Modifier) {
 
 
 @Composable
-fun Header(name: String, modifi: Modifier = Modifier){
+fun Header(name: String, modifi: Modifier = Modifier, onClick: () -> Unit) {
 
     Column(
         modifier = modifi
-            .padding(start = 5.dp , end = 5.dp , top = 5.dp)
+            .padding(start = 5.dp, end = 5.dp, top = 5.dp)
             .height(54.dp)
-            .background(MaterialTheme.colorScheme.surfaceTint,
-                shape = MaterialTheme.shapes.large)
-            .fillMaxWidth()
-        ,
+            .clickable { onClick() }
+            .background(
+                MaterialTheme.colorScheme.surfaceTint,
+                shape = MaterialTheme.shapes.large
+            )
+            .fillMaxWidth(),
         verticalArrangement = Arrangement.Center
     ) {
         Text(
@@ -155,5 +156,5 @@ fun Header(name: String, modifi: Modifier = Modifier){
 @Preview(showBackground = true, device = "id:pixel_8_pro")
 @Composable
 fun Preview() {
-    SimpleLazyList(10, Modifier)
+    SimpleLazyList(10, Modifier) {}
 }

@@ -1,6 +1,7 @@
 package com.example.myapplication
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -23,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -39,6 +41,10 @@ import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.compose.lazyCol.SimpleLazyList
 import com.example.myapplication.compose.simpleNavi.Favorite
 import com.example.myapplication.ui.theme.MyApplicationTheme
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.shouldShowRationale
 
 
 class MainActivity : ComponentActivity() {
@@ -46,14 +52,31 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+//        val permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+//            // returns boolean representind whether the
+//            // permission is granted or not
+//            if (isGranted) {
+//                // permission granted continue the normal workflow of app
+//                Log.i("DEBUG", "permission granted")
+//            } else {
+//                // if permission denied then check whether never ask
+//                // again is selected or not by making use of
+//                // !ActivityCompat.shouldShowRequestPermissionRationale(
+//                // requireActivity(), Manifest.permission.CAMERA)
+//                Log.i("DEBUG", "permission denied")
+//            }
+//        }
+//        permissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
+
         setContent {
-            MyApplicationTheme {
-                SimpleLazyList(10, modifier = Modifier)
-            }
+            MainView()
         }
 
     }
+
+
 }
+
 
 sealed class BottomNavItem(val route: String, val name: String, val icon: ImageVector) {
     object PlayArrow : BottomNavItem("playArrow", "PlayArrow", Icons.Filled.PlayArrow)
@@ -61,19 +84,51 @@ sealed class BottomNavItem(val route: String, val name: String, val icon: ImageV
 
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true, device = "id:pixel_8_pro")
+@OptIn(ExperimentalPermissionsApi::class)
+@Preview
 @Composable
-fun Preview() {
+fun testCon() {
+    MainView()
+}
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+fun PermissionRequest() {
+    val accessFine = rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION) { isGranted ->
+        Log.i("DEBUG", "rememberPermissionState invoke ${isGranted}")
+
+        if (isGranted) {
+            // Permission granted
+        } else {
+            // Handle permission denial
+        }
+
+    }
+
+    LaunchedEffect(accessFine) {
+        if (!accessFine.status.isGranted && accessFine.status.shouldShowRationale) {
+            // Show rationale if needed
+            Log.i("DEBUG", "permission !granted")
+
+        } else {
+            Log.i("DEBUG", "isGranted permission denied")
+
+            accessFine.launchPermissionRequest()
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
+@Composable
+fun MainView() {
+
+    PermissionRequest()
 
     val topLevelRoutes = listOf(
         BottomNavItem.Favorite, BottomNavItem.PlayArrow
     )
     val navController = rememberNavController()
-
-    var itemStatus by rememberSaveable { mutableStateOf(0) }
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
-    val scrollBehaviorPinned = TopAppBarDefaults.pinnedScrollBehavior()
 
     MyApplicationTheme {
         Scaffold(
@@ -99,7 +154,7 @@ fun Preview() {
                 } else {
                     MediumTopAppBar(
                         title = { Text(text = "MediumTopAppBar") },
-                        scrollBehavior = scrollBehaviorPinned,
+                        scrollBehavior = scrollBehavior,
                         navigationIcon = {
                             IconButton(onClick = {}) {
                                 Icon(
@@ -166,7 +221,7 @@ fun Preview() {
                 startDestination = BottomNavItem.PlayArrow.route,
                 Modifier.padding(innerPadding)
             ) {
-                composable(BottomNavItem.PlayArrow.route) { SimpleLazyList(10, Modifier) }
+                composable(BottomNavItem.PlayArrow.route) { SimpleLazyList(10, Modifier) {} }
                 composable(BottomNavItem.Favorite.route) { Favorite(Modifier) }
             }
 
