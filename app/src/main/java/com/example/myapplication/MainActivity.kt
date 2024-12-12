@@ -44,7 +44,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.compose.lazyCol.SimpleLazyList
-import com.example.myapplication.compose.permission.nativePermission
+import com.example.myapplication.compose.permission.NativePermission
 import com.example.myapplication.compose.permission.onPermissionResult
 import com.example.myapplication.compose.simpleNavi.Favorite
 import com.example.myapplication.ui.theme.MyApplicationTheme
@@ -160,7 +160,7 @@ fun PermissionRequest() {
 @Composable
 fun MainView() {
 
-    nativePermission(android.Manifest.permission.ACCESS_FINE_LOCATION, object : onPermissionResult{
+    NativePermission(android.Manifest.permission.ACCESS_FINE_LOCATION, object : onPermissionResult{
         override fun onSuccess(isGranted: Boolean) {
         }
 

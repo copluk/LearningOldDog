@@ -17,7 +17,7 @@ interface onPermissionResult {
 }
 
 @Composable
-fun nativePermission(permission: String, onPermissionResult: onPermissionResult) {
+fun NativePermission(permission: String, onPermissionResult: onPermissionResult) {
     val shouldShowDialog = remember { mutableStateOf(false) }
 
     val startPermissionRequest = System.currentTimeMillis()
