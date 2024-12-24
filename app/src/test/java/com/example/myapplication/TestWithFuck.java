@@ -20,7 +20,7 @@ public class TestWithFuck {
 
         byte[] oriData = hexStringToByteArray("11021102412C11770400010100800200050A74312E32C7A40B04025011");
         byte[] oriDataaaa = hexStringToByteArray(
-                        "11" + // 00
+                "11" + // 00
                         "02" +
                         "41" +
                         "2C" +
@@ -90,6 +90,37 @@ public class TestWithFuck {
             returnValue = "Finish";
 
         }
+
+    }
+
+    @Test
+    public void wtfCH() {
+        String showCh = "52";
+
+        String deviceCh = "4";
+
+        boolean ass =
+                !("52".equals(deviceCh)
+                        || deviceCh.equals("2")
+                        || deviceCh.equals("1")
+                        || deviceCh.equals("5")
+                        || deviceCh.equals("4")
+                );
+
+        assert ass;
+
+    }
+
+    @Test
+    public void wtfCHddd() {
+        String showCh = "52";
+
+        String deviceCh = "4";
+
+        boolean ass =
+                !(false || false || true);
+
+        assert ass;
 
     }
 }
