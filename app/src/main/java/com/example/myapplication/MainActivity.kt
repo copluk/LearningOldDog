@@ -1,12 +1,11 @@
 package com.example.myapplication
 
+import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
@@ -30,8 +29,6 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -47,6 +44,10 @@ import com.example.myapplication.compose.lazyCol.SimpleLazyList
 import com.example.myapplication.compose.permission.NativePermission
 import com.example.myapplication.compose.permission.onPermissionResult
 import com.example.myapplication.compose.simpleNavi.Favorite
+import com.example.myapplication.dataLayer.locationProvider.BLELocationProvider
+import com.example.myapplication.dataLayer.locationProvider.LocationCallback
+import com.example.myapplication.dataLayer.manager.LocationManager
+import com.example.myapplication.dataLayer.locationProvider.LocationResult
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -59,21 +60,16 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-//        val permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-//            // returns boolean representind whether the
-//            // permission is granted or not
-//            if (isGranted) {
-//                // permission granted continue the normal workflow of app
-//                Log.i("DEBUG", "permission granted")
-//            } else {
-//                // if permission denied then check whether never ask
-//                // again is selected or not by making use of
-//                // !ActivityCompat.shouldShowRequestPermissionRationale(
-//                // requireActivity(), Manifest.permission.CAMERA)
-//                Log.i("DEBUG", "permission denied")
-//            }
-//        }
-//        permissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
+        val locationManager: LocationManager = LocationManager()
+        locationManager.setActiveProvider(BLELocationProvider())
+
+        locationManager.requestLocation(object : LocationCallback {
+            override fun onLocationResult(locationResult: LocationResult) {
+                val location: Location? = locationResult.getLastLocation()
+                // Use the location data
+            }
+        })
+
 
         setContent {
             MainView()
