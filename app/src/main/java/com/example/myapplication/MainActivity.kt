@@ -1,7 +1,11 @@
 package com.example.myapplication
 
-import android.location.Location
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
+import android.os.IBinder
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -44,10 +48,6 @@ import com.example.myapplication.compose.lazyCol.SimpleLazyList
 import com.example.myapplication.compose.permission.NativePermission
 import com.example.myapplication.compose.permission.onPermissionResult
 import com.example.myapplication.compose.simpleNavi.Favorite
-import com.example.myapplication.dataLayer.locationProvider.BLELocationProvider
-import com.example.myapplication.dataLayer.locationProvider.LocationCallback
-import com.example.myapplication.dataLayer.manager.LocationManager
-import com.example.myapplication.dataLayer.locationProvider.LocationResult
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -56,20 +56,14 @@ import com.google.accompanist.permissions.shouldShowRationale
 
 
 class MainActivity : ComponentActivity() {
+    private lateinit var locationService: LocationService
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val locationManager: LocationManager = LocationManager()
-        locationManager.setActiveProvider(BLELocationProvider())
-
-        locationManager.requestLocation(object : LocationCallback {
-            override fun onLocationResult(locationResult: LocationResult) {
-                val location: Location? = locationResult.getLastLocation()
-                // Use the location data
-            }
-        })
-
+        val intent = Intent(this, LocationService::class.java)
+        this.bindService(intent, locationServiceConnection, Context.BIND_AUTO_CREATE)
 
         setContent {
             MainView()
@@ -77,6 +71,21 @@ class MainActivity : ComponentActivity() {
 
     }
 
+
+    private val locationServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            val binder = service as LocationService.LocalBinder
+            locationService = binder.getService()
+
+            locationService.locationLiveData.observe(this@MainActivity) { location ->
+                Log.d("Test Loca" , "${location.time}")
+            }
+
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+        }
+    }
 
 }
 
@@ -156,7 +165,7 @@ fun PermissionRequest() {
 @Composable
 fun MainView() {
 
-    NativePermission(android.Manifest.permission.ACCESS_FINE_LOCATION, object : onPermissionResult{
+    NativePermission(android.Manifest.permission.ACCESS_FINE_LOCATION, object : onPermissionResult {
         override fun onSuccess(isGranted: Boolean) {
         }
 
