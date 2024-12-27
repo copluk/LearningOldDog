@@ -13,10 +13,22 @@ class LocationManager {
 
     fun requestLocation(callback: LocationCallback?) {
         if (activeProvider != null) {
-            activeProvider?.requestLocation(callback)
+            activeProvider?.initProvider(callback)
         } else {
             // Handle the case where no provider is available
         }
+    }
+
+    fun startRequest(){
+        activeProvider?.startRequest()
+    }
+
+    fun stopRequest(){
+        activeProvider?.stopRequest()
+    }
+
+    fun end(){
+        activeProvider?.endProvider()
     }
 
 }

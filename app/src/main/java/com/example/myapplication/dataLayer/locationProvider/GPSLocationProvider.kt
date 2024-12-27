@@ -3,8 +3,10 @@ package com.example.myapplication.dataLayer.locationProvider
 import android.content.Context
 import android.location.LocationManager
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class GPSLocationProvider(private val context: Context) : ILocationProvider {
 
@@ -12,13 +14,24 @@ class GPSLocationProvider(private val context: Context) : ILocationProvider {
         context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
     private var locationCallback: LocationCallback? = null
 
-    override fun requestLocation(callback: LocationCallback?) {
+    private val loopScope = MainScope()
+    override fun initProvider(callback: LocationCallback?) {
 
         locationCallback = callback
+    }
 
-        MainScope().launch {
+    override fun startRequest() {
+        loopScope.launch {
             loopLocation()
         }
+    }
+
+    override fun stopRequest() {
+        loopScope.cancel()
+    }
+
+    override fun endProvider() {
+        stop()
     }
 
     private suspend fun loopLocation() {
@@ -28,7 +41,7 @@ class GPSLocationProvider(private val context: Context) : ILocationProvider {
     }
 
 
-    fun stop() {
+    private fun stop() {
         locationCallback = null
     }
 

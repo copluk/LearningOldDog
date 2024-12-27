@@ -1,5 +1,10 @@
 package com.example.myapplication.dataLayer.locationProvider
 
 interface ILocationProvider {
-    fun requestLocation(callback: LocationCallback?)
+
+    fun initProvider(callback: LocationCallback?)
+    fun startRequest()
+    fun stopRequest()
+    fun endProvider()
+
 }

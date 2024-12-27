@@ -6,7 +6,6 @@ import android.os.Binder
 import android.os.IBinder
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.myapplication.dataLayer.locationProvider.BLELocationProvider
 import com.example.myapplication.dataLayer.locationProvider.GPSLocationProvider
 import com.example.myapplication.dataLayer.locationProvider.LocationCallback
 import com.example.myapplication.dataLayer.locationProvider.LocationResult
@@ -30,6 +29,7 @@ class LocationService : Service() {
                 _locationLiveData.postValue(locationResult)
             }
         })
+        locationManager.startRequest()
 
 
 
@@ -42,6 +42,7 @@ class LocationService : Service() {
     override fun onDestroy() {
         super.onDestroy()
 
+        locationManager.end()
     }
 
     inner class LocalBinder : Binder() {
