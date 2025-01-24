@@ -8,15 +8,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.myapplication.dataLayer.locationProvider.GPSLocationProvider
 import com.example.myapplication.dataLayer.locationProvider.LocationCallback
-import com.example.myapplication.dataLayer.locationProvider.LocationResult
 import com.example.myapplication.dataLayer.manager.LocationManager
+import com.example.myapplication.dataLayer.model.LocationModel
 
 class LocationService : Service() {
 
     private lateinit var locationManager: LocationManager
 
-    private val _locationLiveData = MutableLiveData<LocationResult>()
-    val locationLiveData: LiveData<LocationResult> get() = _locationLiveData
+    private val _locationLiveData = MutableLiveData<LocationModel>()
+    val locationLiveData: LiveData<LocationModel> get() = _locationLiveData
 
 
     override fun onCreate() {
@@ -25,7 +25,7 @@ class LocationService : Service() {
         locationManager.setActiveProvider(GPSLocationProvider(applicationContext))
 
         locationManager.requestLocation(object : LocationCallback {
-            override fun onLocationResult(locationResult: LocationResult) {
+            override fun onLocationResult(locationResult: LocationModel) {
                 _locationLiveData.postValue(locationResult)
             }
         })

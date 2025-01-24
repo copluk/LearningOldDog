@@ -1,5 +1,7 @@
 package com.example.myapplication.dataLayer.locationProvider
 
+import com.example.myapplication.dataLayer.model.LocationModel
+
 interface LocationCallback {
-    fun onLocationResult(locationResult: LocationResult)
+    fun onLocationResult(locationResult: LocationModel)
 }

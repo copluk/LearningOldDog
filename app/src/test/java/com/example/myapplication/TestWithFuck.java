@@ -123,4 +123,49 @@ public class TestWithFuck {
         assert ass;
 
     }
+
+    @Test
+    public void testTrue15Byte(){
+        byte[] test = new byte[]{(byte) 0xff, (byte) 0xbb, 0x03, 0x06 , 0x07,0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f};
+
+        assert checkByteArrayForSequence(test);
+    }
+
+
+    @Test
+    public void testFalse15Byte(){
+        byte[] test = new byte[]{(byte) 0xff, (byte) 0xbb, 0x03, 0x06 , 0x07,0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0c, 0x0c, 0x0c, 0x0e, 0x0f};
+
+        assert !checkByteArrayForSequence(test);
+    }
+
+    @Test
+    public void testNotLast15Byte(){
+        byte[] test = new byte[]{(byte) 0xff, (byte) 0xbb, 0x03, 0x06 , 0x07,0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, (byte) 0xbb, 0x03, 0x06 , 0x07,0x01};
+
+        assert checkByteArrayForSequence(test);
+    }
+
+    public  boolean checkByteArrayForSequence(byte[] byteArray) {
+        byte[] expectedBytes = new byte[] {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f};
+
+        if (byteArray.length < expectedBytes.length) {
+            return false;
+        }
+
+        for (int i = 0; i <= byteArray.length - expectedBytes.length; i++) {
+            boolean match = true;
+            for (int j = 0; j < expectedBytes.length; j++) {
+                if (byteArray[i + j] != expectedBytes[j]) {
+                    match = false;
+                    break;
+                }
+            }
+            if (match) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
